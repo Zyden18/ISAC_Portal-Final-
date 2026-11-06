@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Payment Receipt · ISAC Portal{% endblock %}
+{% block page_title %}Payment Receipt{% endblock %}
+
+{% block content %}
+<style>
+  .fine-receipt { max-width: 760px; margin: 0 auto; }
+  .fine-receipt-card { background: #fff; border: 1px solid #dce7df; border-radius: 18px; padding: 32px; box-shadow: 0 12px 32px rgba(20, 55, 35, .08); }
+  .fine-receipt-header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; padding-bottom: 22px; border-bottom: 1px solid #e5ece7; }
+  .fine-receipt-header h2 { margin: 4px 0; }
+  .fine-receipt-header p, .fine-receipt-meta { color: #66756b; }
+  .fine-receipt-paid { color: #176b45; border: 1px solid #a9d9bd; background: #effaf3; border-radius: 999px; padding: 7px 12px; font-weight: 700; white-space: nowrap; }
+  .fine-receipt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; padding: 24px 0; }
+  .fine-receipt-item small { display: block; color: #66756b; margin-bottom: 5px; }
+  .fine-receipt-item strong { overflow-wrap: anywhere; }
+  .fine-receipt-total { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e5ece7; padding-top: 20px; font-size: 1.1rem; }
+  .fine-receipt-total strong { font-size: 1.45rem; color: #176b45; }
+  .fine-receipt-actions { display: flex; gap: 10px; margin-top: 22px; }
+  @media (max-width: 560px) { .fine-receipt-card { padding: 22px; } .fine-receipt-grid { grid-template-columns: 1fr; gap: 16px; } .fine-receipt-header { flex-direction: column; } }
+  @media print { body * { visibility: hidden !important; } .fine-receipt, .fine-receipt * { visibility: visible !important; } .fine-receipt { position: absolute; inset: 0; max-width: none; margin: 0; } .fine-receipt-card { box-shadow: none; border: 0; } .fine-receipt-actions { display: none !important; } }
+</style>
+<section class="module-page fine-receipt">
+  <article class="fine-receipt-card">
+    <header class="fine-receipt-header">
+      <div>
+        <span class="module-eyebrow">ISAC Portal · Fine payment</span>
+        <h2>Payment Receipt</h2>
+        <p class="fine-receipt-meta">Receipt No. FINE-{{ fine.id|stringformat:"06d" }}</p>
+      </div>
+      <span class="fine-receipt-paid"><i data-lucide="circle-check" aria-hidden="true"></i> Paid</span>
+    </header>
+    <div class="fine-receipt-grid">
+      <div class="fine-receipt-item"><small>Student</small><strong>{{ fine.student.full_name }}</strong></div>
+      <div class="fine-receipt-item"><small>Student ID</small><strong>{{ fine.student.student_no|default:"—" }}</strong></div>
+      <div class="fine-receipt-item"><small>College / Program</small><strong>{{ fine.student.college.code|default:"—" }}{% if fine.student.program %} · {{ fine.student.program.name }}{% endif %}</strong></div>
+      <div class="fine-receipt-item"><small>Payment date</small><strong>{{ fine.verified_at|default:fine.created_at|date:"M d, Y · h:i A" }}</strong></div>
+      <div class="fine-receipt-item"><small>Fine description</small><strong>{{ fine.reason }}</strong></div>
+      <div class="fine-receipt-item"><small>Related event</small><strong>{{ fine.event.title|default:"Campus regulation" }}</strong></div>
+    </div>
+    <div class="fine-receipt-total"><span>Amount paid</span><strong>₱{{ fine.amount }}</strong></div>
+    <div class="fine-receipt-actions">
+      <button class="btn primary" type="button" onclick="window.print()"><i data-lucide="printer" aria-hidden="true"></i> Print receipt</button>
+      {% if request.user.profile.role == "student" %}<a class="btn secondary" href="{% url 'student_fines' %}">Back to Fines &amp; Fees</a>{% else %}<a class="btn secondary" href="{% url 'fines' %}">Back to fines</a>{% endif %}
+    </div>
+  </article>
+</section>
+{% endblock %}

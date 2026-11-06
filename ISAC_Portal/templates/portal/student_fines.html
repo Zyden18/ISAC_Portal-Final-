@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Fines & Fees · ISAC Portal{% endblock %}
+{% block page_title %}Fines & Fees{% endblock %}
+
+{% block content %}
+<section class="module-page">
+  <div class="module-heading">
+    <div><span class="module-eyebrow">Student account</span><h2>Fines &amp; Fees</h2><p>Review your charges and open a receipt for any fine marked paid.</p></div>
+  </div>
+  <div class="module-panel">
+    <div class="module-table-title"><div><h3>Your fine records</h3><p>{{ fines|length }} record{{ fines|length|pluralize }}</p></div></div>
+    <div class="module-table-scroll">
+      <table class="module-table fines-table">
+        <thead><tr><th>Reason</th><th>Event</th><th>Amount</th><th>Status</th><th>Date recorded</th><th>Receipt</th></tr></thead>
+        <tbody>
+          {% for fine in fines %}
+          <tr>
+            <td data-label="Reason"><strong>{{ fine.reason }}</strong></td>
+            <td data-label="Event">{{ fine.event.title|default:"Campus regulation" }}</td>
+            <td data-label="Amount" class="amount-cell">₱{{ fine.amount }}</td>
+            <td data-label="Status"><span class="payment-status {{ fine.status }}">{{ fine.status|title }}</span></td>
+            <td data-label="Date recorded">{{ fine.created_at|date:"M d, Y" }}</td>
+            <td data-label="Receipt">{% if fine.status == "paid" %}<a class="btn secondary" href="{% url 'fine_receipt' fine.id %}"><i data-lucide="receipt-text" aria-hidden="true"></i> View receipt</a>{% else %}<span class="fine-receipt-pending">Available when paid</span>{% endif %}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" class="module-no-results"><i data-lucide="receipt" aria-hidden="true"></i><strong>No fines or fees on record</strong><span>Your student account has no fine records.</span></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}
