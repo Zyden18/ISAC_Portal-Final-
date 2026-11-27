@@ -50,7 +50,8 @@ if USE_SQLITE:
 else:
     DATABASES = {
         "default": {
-            "ENGINE": "django.db.backends.mysql",
+            'ENGINE': 'mysql.connector.django',
+            # "ENGINE": "django.db.backends.mysql",
             "NAME": os.getenv("DB_NAME", "isac_portal"),
             "USER": os.getenv("DB_USER", "root"),
             "PASSWORD": os.getenv("DB_PASSWORD", ""),
